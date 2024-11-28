@@ -18,7 +18,7 @@ export default function Login() {
     const handleLogin = async () => {
         try {
             const response = await axios.post(
-                'http://localhost:8080/sign-in',
+                'http://43.200.155.29/sign-in',
                 formData,
                 {
                     headers: {
@@ -48,7 +48,7 @@ export default function Login() {
 
     const handleGoogleLogin = () => {
         // 브라우저 리다이렉션 방식으로 Google OAuth2 처리
-        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+        window.location.href = 'http://43.200.155.29/oauth2/authorization/google';
     };
 
     const handleResist = () => {
