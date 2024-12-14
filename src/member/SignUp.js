@@ -24,7 +24,7 @@ export default function SignUp() {
         }
 
         try {
-            const response = await fetch(`http://43.200.155.29:8080:8080/sign-up/valid?email=${encodeURIComponent(formData.email)}`, {
+            const response = await fetch(`http://43.200.155.29:8080/sign-up/valid?email=${encodeURIComponent(formData.email)}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

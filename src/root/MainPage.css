@@ -1,0 +1,33 @@
+.main-page {
+    display: flex;
+    height: 100vh; /* 전체 화면 높이를 사용 */
+}
+
+.left-section {
+    width: 20%; /* 사이드바 너비 */
+    height: 100vh; /* 부모 높이에 맞춤 */
+    background-color: #f5f5f5;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    box-sizing: border-box; /* 내부 패딩 포함 */
+}
+
+.user-info,
+.notification,
+.tabs,
+.tab-content {
+    width: 100%; /* 부모의 전체 너비 사용 */
+}
+
+.right-section {
+    flex: 1; /* 남은 공간을 차지 */
+    padding: 20px;
+    background-color: #fff;
+    overflow-y: auto; /* 컨텐츠가 넘칠 경우 스크롤 추가 */
+}
+
+.calendar-view {
+    margin-top: 40px; /* 상단 여백 40px */
+}

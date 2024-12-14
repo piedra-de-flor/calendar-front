@@ -78,25 +78,25 @@ export default function MainPage() {
                 if (!accessToken) throw new Error('Access token is missing.');
 
                 // 사용자 정보 가져오기
-                const userResponse = await axios.get('http://43.200.155.29:8080/member', {
+                const userResponse = await axios.get('http://localhost:8080/member', {
                     headers: {Authorization: `Bearer ${accessToken}`},
                 });
                 setUserInfo(userResponse.data);
 
                 // 친구 목록 가져오기
-                const friendsResponse = await axios.get('http://43.200.155.29:8080/my-friends', {
+                const friendsResponse = await axios.get('http://localhost:8080/my-friends', {
                     headers: {Authorization: `Bearer ${accessToken}`},
                 });
                 setFriends(friendsResponse.data);
 
                 // 팀 목록 가져오기
-                const teamsResponse = await axios.get('http://43.200.155.29:8080/my-teams', {
+                const teamsResponse = await axios.get('http://localhost:8080/my-teams', {
                     headers: {Authorization: `Bearer ${accessToken}`},
                 });
                 setTeams(teamsResponse.data);
 
                 // 카테고리 데이터 가져오기
-                const categoryResponse = await axios.get('http://43.200.155.29:8080/schedule/category', {
+                const categoryResponse = await axios.get('http://localhost:8080/schedule/category', {
                     headers: {Authorization: `Bearer ${accessToken}`},
                 });
                 setCategories(categoryResponse.data);
@@ -106,7 +106,7 @@ export default function MainPage() {
                 const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString().split('T')[0];
 
                 // 월간 작업 데이터 가져오기
-                const monthlyTasksResponse = await axios.get('http://43.200.155.29:8080/schedule/task/month', {
+                const monthlyTasksResponse = await axios.get('http://localhost:8080/schedule/task/month', {
                     headers: {Authorization: `Bearer ${accessToken}`}, params: {startDate, endDate},
                 });
 
@@ -137,7 +137,7 @@ export default function MainPage() {
                 const kstTodayDate = new Date(today.getTime() + 9 * 60 * 60 * 1000)
                     .toISOString()
                     .split('T')[0];
-                const todayTasksResponse = await axios.get('http://43.200.155.29:8080/schedule/task/day', {
+                const todayTasksResponse = await axios.get('http://localhost:8080/schedule/task/day', {
                     headers: {Authorization: `Bearer ${accessToken}`}, params: {date: kstTodayDate},
                 });
 
@@ -190,7 +190,7 @@ export default function MainPage() {
             const accessToken = params.get('accessToken');
             if (!accessToken) throw new Error('Access token is missing.');
 
-            const response = await axios.delete('http://43.200.155.29:8080/schedule/task', {
+            const response = await axios.delete('http://localhost:8080/schedule/task', {
                 headers: {Authorization: `Bearer ${accessToken}`}, params: {taskId: selectedTask.id},
             });
 
@@ -226,13 +226,13 @@ export default function MainPage() {
             if (!accessToken) throw new Error('Access token is missing.');
 
             // 수정 요청 전송
-            const response = await axios.patch('http://43.200.155.29:8080/schedule/task', editTask, {
+            const response = await axios.patch('http://localhost:8080/schedule/task', editTask, {
                 headers: {Authorization: `Bearer ${accessToken}`},
             });
 
             // Task 카테고리 업데이트 요청
             if (editTask.taskId && editTask.categoryId) {
-                await axios.patch('http://43.200.155.29:8080/schedule/task/category', {
+                await axios.patch('http://localhost:8080/schedule/task/category', {
                     taskId: editTask.taskId,
                     categoryId: editTask.categoryId,
                 }, {
@@ -281,7 +281,7 @@ export default function MainPage() {
             if (!accessToken) throw new Error('Access token is missing.');
 
             // 카테고리 삭제 요청 (RequestParam 사용)
-            await axios.delete('http://43.200.155.29:8080/schedule/category', {
+            await axios.delete('http://localhost:8080/schedule/category', {
                 params: {categoryId}, // RequestParam으로 전달
                 headers: {Authorization: `Bearer ${accessToken}`},
             });
@@ -339,7 +339,7 @@ export default function MainPage() {
 
             // 서버로 새 태스크 생성 요청
             const response = await axios.post(
-                'http://43.200.155.29:8080/schedule/task',
+                'http://localhost:8080/schedule/task',
                 {
                     categoryId: newTask.categoryId,
                     date: moment(selectedDate).format('YYYY-MM-DD'),
@@ -398,7 +398,7 @@ export default function MainPage() {
 
                 // 카테고리 수정 요청
                 const response = await axios.patch(
-                    'http://43.200.155.29:8080/schedule/category',
+                    'http://localhost:8080/schedule/category',
                     {
                         categoryId: newCategory.id,
                         name: newCategory.name,
@@ -449,7 +449,7 @@ export default function MainPage() {
             } else {
                 // 새 카테고리 추가 요청
                 const response = await axios.post(
-                    'http://43.200.155.29:8080/schedule/category',
+                    'http://localhost:8080/schedule/category',
                     {
                         name: newCategory.name,
                         color: newCategory.color,
@@ -485,7 +485,7 @@ export default function MainPage() {
             const accessToken = params.get("accessToken");
             if (!accessToken) throw new Error("Access token is missing.");
 
-            const response = await axios.get("http://43.200.155.29:8080/my-friends", {
+            const response = await axios.get("http://localhost:8080/my-friends", {
                 headers: {Authorization: `Bearer ${accessToken}`},
             });
 
@@ -500,12 +500,12 @@ export default function MainPage() {
         const accessToken = params.get("accessToken");
 
         try {
-            const sentResponse = await axios.get("http://43.200.155.29:8080/invitations/send/friend", {
+            const sentResponse = await axios.get("http://localhost:8080/invitations/send/friend", {
                 headers: {Authorization: `Bearer ${accessToken}`},
             });
             setSentFriendRequests(sentResponse.data);
 
-            const receivedResponse = await axios.get("http://43.200.155.29:8080/invitations/receive/friend", {
+            const receivedResponse = await axios.get("http://localhost:8080/invitations/receive/friend", {
                 headers: {Authorization: `Bearer ${accessToken}`},
             });
             setReceivedFriendRequests(receivedResponse.data);
@@ -520,7 +520,7 @@ export default function MainPage() {
 
         try {
             const response = await axios.post(
-                "http://43.200.155.29:8080/invitation/friend",
+                "http://localhost:8080/invitation/friend",
                 {receiverEmail: newFriendEmail},
                 {
                     headers: {
@@ -728,7 +728,7 @@ export default function MainPage() {
             if (!accessToken) throw new Error("Access token is missing.");
 
             const response = await axios.post(
-                "http://43.200.155.29:8080/invitation/accept",
+                "http://localhost:8080/invitation/accept",
                 null, // POST 요청의 body는 없으므로 null
                 {
                     headers: {Authorization: `Bearer ${accessToken}`},
@@ -755,7 +755,7 @@ export default function MainPage() {
             if (!accessToken) throw new Error("Access token is missing.");
 
             const response = await axios.post(
-                "http://43.200.155.29:8080/invitation/denied",
+                "http://localhost:8080/invitation/denied",
                 null, // POST 요청의 body는 없으므로 null
                 {
                     headers: {Authorization: `Bearer ${accessToken}`},
@@ -779,7 +779,7 @@ export default function MainPage() {
             const accessToken = params.get("accessToken");
             if (!accessToken) throw new Error("Access token is missing.");
 
-            const response = await axios.delete("http://43.200.155.29:8080/invitation", {
+            const response = await axios.delete("http://localhost:8080/invitation", {
                 headers: {Authorization: `Bearer ${accessToken}`},
                 params: {invitationId: request.id}, // invitationId를 RequestParam으로 전달
             });
@@ -813,7 +813,7 @@ export default function MainPage() {
             const accessToken = params.get('accessToken');
             if (!accessToken) throw new Error('Access token is missing.');
 
-            const response = await axios.delete('http://43.200.155.29:8080/friend', {
+            const response = await axios.delete('http://localhost:8080/friend', {
                 headers: {Authorization: `Bearer ${accessToken}`}, params: {friendId},
             });
 
@@ -867,7 +867,7 @@ export default function MainPage() {
             const accessToken = params.get("accessToken");
             if (!accessToken) throw new Error("Access token is missing.");
 
-            const response = await axios.get("http://43.200.155.29:8080/my-teams", {
+            const response = await axios.get("http://localhost:8080/my-teams", {
                 headers: {Authorization: `Bearer ${accessToken}`},
             });
 
@@ -883,12 +883,12 @@ export default function MainPage() {
         const accessToken = params.get("accessToken");
 
         try {
-            const sentResponse = await axios.get("http://43.200.155.29:8080/invitations/send/team", {
+            const sentResponse = await axios.get("http://localhost:8080/invitations/send/team", {
                 headers: {Authorization: `Bearer ${accessToken}`},
             });
             setSentTeamRequests(sentResponse.data);
 
-            const receivedResponse = await axios.get("http://43.200.155.29:8080/invitations/receive/team", {
+            const receivedResponse = await axios.get("http://localhost:8080/invitations/receive/team", {
                 headers: {Authorization: `Bearer ${accessToken}`},
             });
             setReceivedTeamRequests(receivedResponse.data);
@@ -1255,7 +1255,7 @@ export default function MainPage() {
             const params = new URLSearchParams(window.location.search);
             const accessToken = params.get("accessToken");
 
-            const response = await axios.get('http://43.200.155.29:8080/team/friends', {
+            const response = await axios.get('http://localhost:8080/team/friends', {
                 params: { teamId },
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
@@ -1299,9 +1299,9 @@ export default function MainPage() {
 
         try {
             const { teamId } = leaveConfirmModal; // 탈퇴할 팀 ID 가져오기
-            const response = await axios.delete('http://43.200.155.29:8080/team', {
-                    headers: {Authorization: `Bearer ${accessToken}`}, params: {teamId},
-                });
+            const response = await axios.delete('http://localhost:8080/team', {
+                headers: {Authorization: `Bearer ${accessToken}`}, params: {teamId},
+            });
             if (response.data) {
                 alert('그룹에서 탈퇴했습니다.');
                 setTeams((prev) => prev.filter((team) => team.id !== teamId)); // 탈퇴한 팀 제거
@@ -1328,7 +1328,7 @@ export default function MainPage() {
             const accessToken = params.get('accessToken');
             if (!accessToken) throw new Error('Access token is missing.');
 
-            const response = await axios.post('http://43.200.155.29:8080/team/friend', {
+            const response = await axios.post('http://localhost:8080/team/friend', {
                 teamId,
                 friendEmail,
             }, {
@@ -1361,7 +1361,7 @@ export default function MainPage() {
                 name: newTeamName.trim(),
             };
 
-            const response = await axios.post('http://43.200.155.29:8080/team',
+            const response = await axios.post('http://localhost:8080/team',
                 createDto,
                 {headers: {Authorization: `Bearer ${accessToken}`}});
 
@@ -1397,7 +1397,7 @@ export default function MainPage() {
         const accessToken = params.get("accessToken");
 
         try {
-            const response = await fetch(`http://43.200.155.29:8080/notifications?page=${page}&size=10`, {
+            const response = await fetch(`http://localhost:8080/notifications?page=${page}&size=10`, {
                 headers: {Authorization: `Bearer ${accessToken}`},
             });
 
@@ -1466,7 +1466,7 @@ export default function MainPage() {
         }
 
         const source = new EventSource(
-            `http://43.200.155.29:8080/notification/subscribe?token=${accessToken}`
+            `http://localhost:8080/notification/subscribe?token=${accessToken}`
         );
 
         // 알림 수신 처리

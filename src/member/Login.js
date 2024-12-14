@@ -30,9 +30,6 @@ export default function Login() {
             // JSON 응답에서 accessToken과 refreshToken 추출
             const { accessToken, refreshToken } = response.data;
 
-            // 로그인 성공 메시지
-            alert('Login successful!');
-
             // /main으로 리다이렉트하면서 accessToken을 RequestParam으로 전달
             navigate(`/main?accessToken=${encodeURIComponent(accessToken)}`);
         } catch (error) {
