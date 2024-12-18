@@ -3,7 +3,7 @@ import moment from 'moment';
 import CategoryManagementModal from './CategoryManagementModal'; // CategoryManagementModal 추가
 import { createTask } from "../api/CalendarApi"; // createTask API 함수 추가
 
-const TaskCreateModal = ({ isOpen, onClose, selectedRange, categories, setEvents, refreshTodayTasks, setCategories }) => {
+const TaskCreateModal = ({ isOpen, onClose, selectedRange, categories, setEvents, refreshTodayTasks, refreshCategories , setCategories }) => {
     const [newTask, setNewTask] = useState({
         description: '',
         startTime: '',
@@ -206,6 +206,7 @@ const TaskCreateModal = ({ isOpen, onClose, selectedRange, categories, setEvents
                     setCategories={setCategories} // 전달
                     setEvents={setEvents}
                     refreshTodayTasks={refreshTodayTasks}
+                    refreshCategories={refreshCategories}
                 />
             )}
         </>

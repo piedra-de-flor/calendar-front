@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchUserInfo } from "../api/userApi";
 
-const UserInfo = ({ accessToken }) => {
+const UserInfo = () => {
     const [userInfo, setUserInfo] = useState({ name: "", email: "" });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);

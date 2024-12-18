@@ -5,12 +5,16 @@ import {
     fetchReceivedRequests,
     sendFriendRequest,
     deleteFriend,
-    acceptFriendRequest,
-    rejectFriendRequest,
 } from "../api/FriendApi";
 
+import {
+    acceptRequest,
+    rejectRequest,
+    cancelRequest,
+} from "../api/InvitationApi";
 
-const FriendsManagement = ({ accessToken, onBackToCalendar }) => {
+
+const FriendsManagement = ({ onBackToCalendar, refreshFriendList }) => {
     const [friends, setFriends] = useState([]);
     const [sentFriendRequests, setSentFriendRequests] = useState([]);
     const [receivedFriendRequests, setReceivedFriendRequests] = useState([]);
@@ -40,9 +44,7 @@ const FriendsManagement = ({ accessToken, onBackToCalendar }) => {
 
     useEffect(() => {
         fetchFriendsData();
-    }, [accessToken]);
 
-    useEffect(() => {
         const handleClickOutside = () => {
             setFriendContextMenu(null); // 클릭 시 컨텍스트 메뉴 닫기
         };
@@ -90,29 +92,37 @@ const FriendsManagement = ({ accessToken, onBackToCalendar }) => {
             setFriends(friends.filter((friend) => friend.id !== deleteConfirmModal.friendId));
             setDeleteConfirmModal({ visible: false, friendId: null });
             setFriendContextMenu(null);
+            refreshFriendList();
         } catch (error) {
             console.error("Error deleting friend:", error);
         }
     };
 
-
-    // ** 친구 요청 수락 **
     const handleAcceptRequest = async (requestId) => {
         try {
-            await acceptFriendRequest(requestId);
+            await acceptRequest(requestId);
             await fetchFriendsData();
+            refreshFriendList();
         } catch (error) {
             console.error("Error accepting request:", error);
         }
     };
 
-    // ** 친구 요청 거절 **
     const handleRejectRequest = async (requestId) => {
         try {
-            await rejectFriendRequest(requestId);
+            await rejectRequest(requestId);
             await fetchFriendsData();
         } catch (error) {
             console.error("Error rejecting request:", error);
+        }
+    };
+
+    const handleCancelRequest = async (requestId) => {
+        try {
+            await cancelRequest(requestId);
+            await fetchFriendsData();
+        } catch (error) {
+            console.error("Error cancel request:", error);
         }
     };
 
@@ -219,7 +229,7 @@ const FriendsManagement = ({ accessToken, onBackToCalendar }) => {
                             >
                                 <span className="text-gray-700">{request.receiverEmail}</span>
                                 <button
-                                    onClick={() => handleRejectRequest(request.id)}
+                                    onClick={() => handleCancelRequest(request.id)}
                                     className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
                                 >
                                     취소

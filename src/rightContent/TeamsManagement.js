@@ -9,9 +9,13 @@ import {
     fetchTeamMembers,
 } from '../api/TeamApi'; // teams.js에서 API 가져오기
 import { fetchFriends } from '../api/FriendApi'; // friends.js에서 친구 API 가져오기
+import {
+    acceptRequest, cancelRequest,
+    rejectRequest
+} from "../api/InvitationApi";
 import TeamCreateModal from '../modals/TeamCreateModal';
 
-const TeamsManagement = ({ onBackToCalendar }) => {
+const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
     const [teams, setTeams] = useState([]);
     const [friends, setFriends] = useState([]);
     const [sentTeamInvitations, setSentTeamInvitations] = useState([]);
@@ -119,6 +123,35 @@ const TeamsManagement = ({ onBackToCalendar }) => {
         }
     };
 
+    const handleAcceptRequest = async (requestId) => {
+        try {
+            await acceptRequest(requestId);
+            await fetchTeamsData();
+            refreshTeamList();
+        } catch (error) {
+            console.error("Error accepting request:", error);
+        }
+    };
+
+    const handleRejectRequest = async (requestId) => {
+        try {
+            await rejectRequest(requestId);
+            await fetchTeamsData();
+            refreshTeamList();
+        } catch (error) {
+            console.error("Error rejecting request:", error);
+        }
+    };
+
+    const handleCancelRequest = async (requestId) => {
+        try {
+            await cancelRequest(requestId);
+            await fetchTeamsData();
+        } catch (error) {
+            console.error("Error cancel request:", error);
+        }
+    };
+
     // 팀 요소 오른쪽 클릭 핸들러
     const handleTeamRightClick = (e, team) => {
         e.preventDefault();
@@ -145,6 +178,7 @@ const TeamsManagement = ({ onBackToCalendar }) => {
             await leaveTeam(teamId); // API 호출로 팀 탈퇴
             await fetchTeamsData(); // 팀 목록 새로고침
             await fetchSentRequests();
+            refreshTeamList();
         } catch (error) {
             console.error('Error leaving team:', error);
         } finally {
@@ -241,13 +275,13 @@ const TeamsManagement = ({ onBackToCalendar }) => {
                                 </div>
                                 <div className="flex gap-2">
                                     <button
-                                        onClick={() => {} /* 수락 로직 추가 */}
+                                        onClick={() => handleAcceptRequest(invitation.id)}
                                         className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
                                     >
                                         수락
                                     </button>
                                     <button
-                                        onClick={() => {} /* 거절 로직 추가 */}
+                                        onClick={() => handleRejectRequest(invitation.id)}
                                         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
                                     >
                                         거절
@@ -274,7 +308,7 @@ const TeamsManagement = ({ onBackToCalendar }) => {
                                     <p className="text-sm text-gray-500">받는 사람: {invitation.receiverName}</p>
                                 </div>
                                 <button
-                                    onClick={() => {} /* 취소 로직 추가 */}
+                                    onClick={() => handleCancelRequest(invitation.id)}
                                     className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
                                 >
                                     취소

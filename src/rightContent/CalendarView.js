@@ -19,6 +19,7 @@ const localizer = momentLocalizer(moment);
 const CalendarView = ({ refreshTodayTasks }) => {
     const [events, setEvents] = useState([]); // 캘린더 이벤트 데이터
     const [categories, setCategories] = useState([]); // 카테고리 데이터
+    const [categoryTrigger, setCategoryTrigger] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [currentDate, setCurrentDate] = useState(new Date()); // 현재 캘린더 날짜
@@ -83,6 +84,19 @@ const CalendarView = ({ refreshTodayTasks }) => {
         } catch (err) {
             console.error("Failed to load categories:", err);
         }
+    };
+
+    // 트리거 변화 감지 후 카테고리 데이터 로드
+    useEffect(() => {
+        const fetchCategories = async () => {
+            await loadCategories(setCategories);
+        };
+        fetchCategories();
+    }, [categoryTrigger]); // 트리거 상태가 변경될 때 실행
+
+    // 트리거 업데이트 함수
+    const refreshCategories = () => {
+        setCategoryTrigger((prev) => prev + 1); // 트리거 값 변경
     };
 
     // 날짜 범위 계산 및 데이터 로드
@@ -307,6 +321,7 @@ const CalendarView = ({ refreshTodayTasks }) => {
                     categories={categories}
                     setEvents={setEvents}
                     refreshTodayTasks={refreshTodayTasks} // TODO 리스트 새로고침
+                    refreshCategories={refreshCategories}
                     setCategories={setCategories} // 수정
                 />
             )}

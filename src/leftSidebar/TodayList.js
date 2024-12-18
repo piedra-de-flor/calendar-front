@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchTodayTasks } from '../api/todayApi';
 
-const TodayList = ({ accessToken, refreshTrigger }) => {
+const TodayList = ({ refreshTrigger }) => {
     const [todayTasks, setTodayTasks] = useState([]); // 오늘의 작업 데이터
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);

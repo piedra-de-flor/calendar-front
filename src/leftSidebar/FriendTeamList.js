@@ -3,7 +3,7 @@ import { fetchFriends } from '../api/FriendApi';
 import { fetchTeams } from '../api/TeamApi';
 import { FaCog } from 'react-icons/fa';
 
-const FriendTeamList = ({ onManageFriends, onManageTeams, refreshTrigger }) => {
+const FriendTeamList = ({ onManageFriends, onManageTeams, refreshFriendListTrigger, refreshTeamListTrigger }) => {
     const [friends, setFriends] = useState([]); // 친구 목록
     const [teams, setTeams] = useState([]); // 팀 목록
     const [loading, setLoading] = useState(true);
@@ -15,15 +15,10 @@ const FriendTeamList = ({ onManageFriends, onManageTeams, refreshTrigger }) => {
                 setLoading(true);
 
                 // 친구 및 팀 목록 가져오기
-                const [friendsData, teamsData] = await Promise.all([
-                    (await fetchFriends()).data,
+                const [teamsData] = await Promise.all([
                     fetchTeams(),
                 ]);
 
-                console.log('Fetched friends:', friendsData); // 디버깅용 로그
-                console.log('Fetched teams:', teamsData); // 디버깅용 로그
-
-                setFriends(Array.isArray(friendsData) ? friendsData : []);
                 setTeams(Array.isArray(teamsData) ? teamsData : []);
 
                 setLoading(false);
@@ -35,7 +30,30 @@ const FriendTeamList = ({ onManageFriends, onManageTeams, refreshTrigger }) => {
         };
 
         fetchData();
-    }, [refreshTrigger]); // refreshTrigger가 변경될 때 데이터를 다시 가져옴
+    }, [refreshTeamListTrigger]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+
+                // 친구 및 팀 목록 가져오기
+                const [friendsData] = await Promise.all([
+                    (await fetchFriends()).data,
+                ]);
+
+                setFriends(Array.isArray(friendsData) ? friendsData : []);
+
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching friends or teams:', err.message);
+                setError('Failed to load friends or teams');
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [refreshFriendListTrigger]);
 
     if (loading) {
         return <div className="text-center text-gray-600">Loading friends and teams...</div>;

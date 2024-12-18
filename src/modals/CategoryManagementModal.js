@@ -12,6 +12,7 @@ const CategoryManagementModal = ({
                                      setCategories,
                                      setEvents,
                                      refreshTodayTasks,
+                                     refreshCategories
                                  }) => {
     const [newCategory, setNewCategory] = useState({ name: "", color: "" });
     const [categoryEditMode, setCategoryEditMode] = useState(false);
@@ -71,6 +72,7 @@ const CategoryManagementModal = ({
                 );
 
                 refreshTodayTasks();
+                refreshCategories();
                 alert("카테고리가 성공적으로 수정되었습니다.");
             } else {
                 const newCategoryId = await createCategory({
@@ -83,6 +85,7 @@ const CategoryManagementModal = ({
                     { categoryId: newCategoryId, name: newCategory.name, color: newCategory.color },
                 ]);
 
+                refreshCategories();
                 alert("새 카테고리가 추가되었습니다.");
             }
 
@@ -116,6 +119,7 @@ const CategoryManagementModal = ({
             );
 
             refreshTodayTasks();
+            refreshCategories();
             alert("카테고리가 성공적으로 삭제되었습니다.");
         } catch (error) {
             console.error("Error deleting category:", error);

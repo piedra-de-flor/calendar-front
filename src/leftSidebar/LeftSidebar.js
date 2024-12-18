@@ -6,7 +6,7 @@ import FriendTeamList from './FriendTeamList';
 import NotificationIcon from './NotificationIcon';
 import NotificationModal from '../modals/NotificationModal';
 
-const LeftSidebar = ({ accessToken, refreshTrigger, onManageFriends, onManageTeams }) => {
+const LeftSidebar = ({ refreshTrigger, refreshFriendListTrigger, refreshTeamListTrigger, onManageFriends, onManageTeams }) => {
     const [activeTab, setActiveTab] = useState('today'); // 기본 탭
     const [isNotificationOpen, setIsNotificationOpen] = useState(false); // 알림 창 열림 상태
     const [unreadCount, setUnreadCount] = useState(0); // 읽지 않은 알림 수
@@ -27,7 +27,6 @@ const LeftSidebar = ({ accessToken, refreshTrigger, onManageFriends, onManageTea
 
             {/* Notification Modal */}
             <NotificationModal
-                accessToken={accessToken}
                 isOpen={isNotificationOpen}
                 onClose={() => setIsNotificationOpen(false)}
                 sidebarRef={sidebarRef}
@@ -37,7 +36,7 @@ const LeftSidebar = ({ accessToken, refreshTrigger, onManageFriends, onManageTea
 
             {/* 사용자 정보 */}
             <div className="user-info flex-shrink-0 p-6">
-                <UserInfo accessToken={accessToken} />
+                <UserInfo/>
             </div>
 
             {/* 탭 버튼 */}
@@ -64,12 +63,13 @@ const LeftSidebar = ({ accessToken, refreshTrigger, onManageFriends, onManageTea
 
             {/* 활성화된 탭에 따른 렌더링 */}
             <div className="tab-content flex-grow w-full overflow-y-auto p-4 mt-10">
-                {activeTab === 'today' && <TodayList accessToken={accessToken} refreshTrigger={refreshTrigger} />}
+                {activeTab === 'today' && <TodayList refreshTrigger={refreshTrigger} />}
                 {activeTab === 'friends' && (
                     <FriendTeamList
-                        accessToken={accessToken}
                         onManageFriends={onManageFriends}
                         onManageTeams={onManageTeams}
+                        refreshFriendListTrigger={refreshFriendListTrigger}
+                        refreshTeamListTrigger={refreshTeamListTrigger}
                     />
                 )}
             </div>

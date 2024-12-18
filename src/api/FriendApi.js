@@ -27,17 +27,3 @@ export const deleteFriend = (friendId) => {
         params: { friendId },
     });
 };
-
-// 친구 요청 수락
-export const acceptFriendRequest = (invitationId) => {
-    return apiClient.post("/invitation/accept", null, {
-        params: { invitationId },
-    });
-};
-
-// 친구 요청 거절
-export const rejectFriendRequest = (invitationId) => {
-    return apiClient.post("/invitation/denied", null, {
-        params: { invitationId },
-    });
-};
