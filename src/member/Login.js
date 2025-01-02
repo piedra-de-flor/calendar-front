@@ -24,12 +24,11 @@ export default function Login() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    withCredentials: true, // 쿠키 사용
                 }
             );
 
-            const { accessToken, refreshToken } = response.data;
-
-            navigate(`/main?accessToken=${encodeURIComponent(accessToken)}`);
+            navigate("/main"); // 로그인 성공 시 메인 페이지로 이동
         } catch (error) {
             console.error('Login error:', error);
             if (error.response && error.response.data && error.response.data.message) {

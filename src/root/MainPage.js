@@ -37,6 +37,21 @@ const MainPage = () => {
         }
     }, [activeRightTab, highlightedSlots, triggerHighlight]);
 
+    const getAccessTokenFromCookie = () => {
+        const cookies = document.cookie.split("; ");
+        const tokenCookie = cookies.find((cookie) => cookie.startsWith("accessToken="));
+        return tokenCookie ? tokenCookie.split("=")[1] : null;
+    };
+
+    useEffect(() => {
+        const token = getAccessTokenFromCookie();
+        if (!token) {
+            console.error("Access token is missing. Redirecting to login.");
+            window.location.href = "/login"; // 로그인 페이지로 리다이렉트
+        }
+    }, []);
+
+
     const refreshTodayTasks = () => {
         setTodayTasksTrigger((prev) => prev + 1);
     };
