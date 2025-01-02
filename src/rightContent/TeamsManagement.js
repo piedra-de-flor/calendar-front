@@ -109,22 +109,22 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
 
     // 팀 생성 및 초대
     const handleAddTeam = async () => {
+        if (!newTeamName.trim()) {
+            addAlert('팀 이름을 입력해주세요.');
+            return;
+        }
+
         try {
-            const team = await createTeam(newTeamName);
+            const friendIds = selectedFriends.map((friend) => friend.id); // 선택된 친구들의 ID 추출
+            const team = await createTeam(newTeamName, friendIds);
 
-            // 선택된 친구들에게 초대 전송
-            const invitationPromises = selectedFriends.map((friend) =>
-                sendTeamRequest(team.id, friend.id)
-            );
-            await Promise.all(invitationPromises);
-
+            addAlert('팀이 성공적으로 생성되었습니다!');
             setNewTeamName('');
             setSelectedFriends([]);
             setShowCreateTeamModal(false);
-            fetchTeamsData();
+            fetchTeamsData(); // 팀 목록 새로고침
         } catch (error) {
-            console.error('Error creating team or sending invitations:', error);
-            addAlert("팀 생성중 오류가 발생했습니다, 잠시 후 다시 시도해주세요.")
+            addAlert(error.message || '팀 생성 중 오류가 발생했습니다.');
         }
     };
 

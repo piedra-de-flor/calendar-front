@@ -27,14 +27,11 @@ export default function Login() {
                 }
             );
 
-            // JSON 응답에서 accessToken과 refreshToken 추출
             const { accessToken, refreshToken } = response.data;
 
-            // /main으로 리다이렉트하면서 accessToken을 RequestParam으로 전달
             navigate(`/main?accessToken=${encodeURIComponent(accessToken)}`);
         } catch (error) {
             console.error('Login error:', error);
-            // 에러 메시지 설정
             if (error.response && error.response.data && error.response.data.message) {
                 setErrorMessage(error.response.data.message);
             } else {
@@ -43,8 +40,13 @@ export default function Login() {
         }
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    };
+
     const handleGoogleLogin = () => {
-        // 브라우저 리다이렉션 방식으로 Google OAuth2 처리
         window.location.href = 'http://43.200.155.29:8080/oauth2/authorization/google';
     };
 
@@ -61,7 +63,6 @@ export default function Login() {
             }}
         >
             <div className="bg-white p-8 rounded shadow-md w-[30rem]">
-                {/* 서비스 아이콘 */}
                 <div className="flex justify-center mb-8">
                     <img
                         src={`${process.env.PUBLIC_URL}/calendar_logo.jpg`}
@@ -82,6 +83,7 @@ export default function Login() {
                         id="email"
                         value={formData.email}
                         onChange={handleChange}
+                        onKeyDown={handleKeyDown} // 엔터키 이벤트 추가
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Enter your email"
                     />
@@ -97,6 +99,7 @@ export default function Login() {
                         id="password"
                         value={formData.password}
                         onChange={handleChange}
+                        onKeyDown={handleKeyDown} // 엔터키 이벤트 추가
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Enter your password"
                     />
@@ -120,7 +123,7 @@ export default function Login() {
                         src="https://developers.google.com/identity/images/btn_google_signin_light_normal_web.png"
                         alt="Sign in with Google"
                         className="cursor-pointer"
-                        onClick={handleGoogleLogin} // 리다이렉션 처리
+                        onClick={handleGoogleLogin}
                     />
                     <button
                         onClick={handleResist}

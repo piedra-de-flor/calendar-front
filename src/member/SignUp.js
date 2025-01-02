@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {useAlert} from "../root/AlertProvider";
 
 export default function SignUp() {
+    const { addAlert } = useAlert();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -51,11 +53,6 @@ export default function SignUp() {
     };
 
     const handleSubmit = async () => {
-        if (!isEmailChecked || !isEmailValid) {
-            setStatusMessage({ type: 'error', text: '이메일 중복 검사를 완료해주세요.' });
-            return;
-        }
-
         try {
             const response = await fetch('http://43.200.155.29:8080/sign-up', {
                 method: 'POST',
@@ -66,15 +63,14 @@ export default function SignUp() {
             });
 
             if (response.ok) {
-                setStatusMessage({ type: 'success', text: '회원가입이 성공적으로 완료되었습니다!' });
+                addAlert("회원가입 성공")
                 setTimeout(() => navigate('/'), 2000); // 2초 후 로그인 페이지로 이동
             } else {
-                const errorMessage = await response.text();
-                setStatusMessage({ type: 'error', text: `회원가입 실패: ${errorMessage}` });
+                addAlert("회원가입 중 문제가 발생했습니다, 잠시 후 다시 시도해주세요.")
             }
         } catch (error) {
             console.error('Error during sign up:', error);
-            setStatusMessage({ type: 'error', text: '회원가입 중 문제가 발생했습니다.' });
+            addAlert("회원가입 중 문제가 발생했습니다, 잠시 후 다시 시도해주세요.")
         }
     };
 

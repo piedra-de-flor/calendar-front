@@ -7,9 +7,19 @@ export const fetchTeams = async () => {
 };
 
 // 팀 생성
-export const createTeam = async (teamName) => {
-    const response = await apiClient.post('/teams', { teamName });
-    return response.data; // 생성된 팀 데이터 반환
+export const createTeam = async (teamName, friendIds) => {
+    try {
+        const response = await apiClient.post('/team', {
+            name: teamName,
+            friends: friendIds,
+        });
+        return response.data; // 생성된 팀 데이터 반환
+    } catch (error) {
+        console.error('Error creating team:', error);
+        throw new Error(
+            error.response?.data?.message || '팀 생성 중 오류가 발생했습니다.'
+        );
+    }
 };
 
 // 보낸 팀 초대 목록 가져오기
