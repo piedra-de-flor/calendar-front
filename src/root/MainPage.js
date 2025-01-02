@@ -15,10 +15,6 @@ const MainPage = () => {
     const [slotsToHighlight, setSlotsToHighlight] = useState([]);
     const [triggerHighlight, setTriggerHighlight] = useState(false); // 강조 상태 제어
 
-    const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get('accessToken');
-    if (!accessToken) throw new Error('Access token is missing.');
-
     // "캘린더에서 보기" 클릭 시 동작
     const handleViewInCalendar = (slots) => {
         setHighlightedSlots(slots); // 강조할 슬롯 설정
@@ -50,7 +46,6 @@ const MainPage = () => {
             window.location.href = "/login"; // 로그인 페이지로 리다이렉트
         }
     }, []);
-
 
     const refreshTodayTasks = () => {
         setTodayTasksTrigger((prev) => prev + 1);

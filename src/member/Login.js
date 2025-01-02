@@ -18,7 +18,7 @@ export default function Login() {
     const handleLogin = async () => {
         try {
             const response = await axios.post(
-                'http://43.200.155.29:8080/sign-in',
+                'http://localhost:8080/sign-in',
                 formData,
                 {
                     headers: {
@@ -46,7 +46,7 @@ export default function Login() {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = 'http://43.200.155.29:8080/oauth2/authorization/google';
+        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
     };
 
     const handleResist = () => {
