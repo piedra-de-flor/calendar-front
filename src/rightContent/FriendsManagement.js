@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-    fetchFriends,
-    fetchSentRequests,
-    fetchReceivedRequests,
-    sendFriendRequest,
     deleteFriend,
+    fetchFriends,
+    fetchReceivedRequests,
+    fetchSentRequests,
+    sendFriendRequest,
 } from "../api/FriendApi";
 
-import {
-    acceptRequest,
-    rejectRequest,
-    cancelRequest,
-} from "../api/InvitationApi";
+import {acceptRequest, cancelRequest, rejectRequest,} from "../api/InvitationApi";
+import {useAlert} from "../root/AlertProvider";
 
 
 const FriendsManagement = ({ onBackToCalendar, refreshFriendList }) => {
+    const { addAlert } = useAlert();
     const [friends, setFriends] = useState([]);
     const [sentFriendRequests, setSentFriendRequests] = useState([]);
     const [receivedFriendRequests, setReceivedFriendRequests] = useState([]);
@@ -37,6 +35,7 @@ const FriendsManagement = ({ onBackToCalendar, refreshFriendList }) => {
             setReceivedFriendRequests(receivedResponse.data);
         } catch (error) {
             console.error('Error fetching friends data:', error);
+            addAlert("친구 데이터 로드 실패, 잠시 후 다시 시도해주세요.")
         } finally {
             setLoading(false);
         }
@@ -71,12 +70,12 @@ const FriendsManagement = ({ onBackToCalendar, refreshFriendList }) => {
     const handleAddFriend = async () => {
         try {
             await sendFriendRequest(newFriendEmail);
-            alert("친구 요청이 성공적으로 전송되었습니다.");
+            addAlert("친구 요청 성공.")
             setNewFriendEmail("");
             fetchFriendsData();
         } catch (error) {
             console.error("Error sending friend request:", error);
-            alert("친구 요청 중 오류가 발생했습니다.");
+            addAlert("친구 요청 실패, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -95,6 +94,7 @@ const FriendsManagement = ({ onBackToCalendar, refreshFriendList }) => {
             refreshFriendList();
         } catch (error) {
             console.error("Error deleting friend:", error);
+            addAlert("친구 삭제 실패, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -105,6 +105,7 @@ const FriendsManagement = ({ onBackToCalendar, refreshFriendList }) => {
             refreshFriendList();
         } catch (error) {
             console.error("Error accepting request:", error);
+            addAlert("친구 요청 수락 실패, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -114,6 +115,7 @@ const FriendsManagement = ({ onBackToCalendar, refreshFriendList }) => {
             await fetchFriendsData();
         } catch (error) {
             console.error("Error rejecting request:", error);
+            addAlert("친구 요청 거절 실패, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -123,6 +125,7 @@ const FriendsManagement = ({ onBackToCalendar, refreshFriendList }) => {
             await fetchFriendsData();
         } catch (error) {
             console.error("Error cancel request:", error);
+            addAlert("친구 요청 취소 실패, 잠시 후 다시 시도해주세요.")
         }
     };
 

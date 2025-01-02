@@ -12,17 +12,15 @@ const TaskEditModal = ({ isOpen, onClose, onSubmit, task, categories }) => {
         categoryDropdownOpen: false,
     });
 
-    // task 변경 시 editTask 초기화
     useEffect(() => {
         if (task) {
-            console.log('Task received in Modal:', task); // 디버깅용 로그
             setEditTask({
                 taskId: task.taskId || '',
-                date: task.date || moment(task.start).format('YYYY-MM-DD'), // task.date가 없으면 task.start로 초기화
-                startTime: task.startTime || moment(task.start).format('HH:mm'), // 현재 시간이 아닌 task.start로 초기화
-                endTime: task.endTime || moment(task.end).format('HH:mm'), // task.end로 초기화
+                date: task.date || moment(task.start).format('YYYY-MM-DD'),
+                startTime: task.startTime || moment(task.start).format('HH:mm'),
+                endTime: task.endTime || moment(task.end).format('HH:mm'),
                 description: task.description || '',
-                categoryId: task.categoryId != null ? task.categoryId : 1, // 기본값 1 설정
+                categoryId: task.categoryId != null ? task.categoryId : 1,
                 categoryDropdownOpen: false,
             });
         }
@@ -31,67 +29,68 @@ const TaskEditModal = ({ isOpen, onClose, onSubmit, task, categories }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded shadow-lg">
-                <h2 className="text-lg font-bold mb-4">일정 수정</h2>
-                <div className="flex flex-col gap-2">
-                    {/* 일정 설명 */}
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-2xl">
+                <h2 className="text-2xl font-semibold text-gray-700 mb-6">일정 수정</h2>
+                <div className="flex flex-col gap-6">
                     <input
                         type="text"
                         name="description"
                         placeholder="일정 설명"
-                        value={editTask.description || ''} // 기본값 처리
-                        onChange={(e) => setEditTask({...editTask, description: e.target.value})}
-                        className="border rounded p-2"
+                        value={editTask.description || ''}
+                        onChange={(e) => setEditTask({ ...editTask, description: e.target.value })}
+                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
 
                     <input
                         type="date"
                         name="date"
-                        value={editTask.date || ''} // 기본값 처리
-                        onChange={(e) => setEditTask({...editTask, date: e.target.value})}
-                        className="border rounded p-2"
+                        value={editTask.date || ''}
+                        onChange={(e) => setEditTask({ ...editTask, date: e.target.value })}
+                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
 
-                    <input
-                        type="time"
-                        name="startTime"
-                        value={editTask.startTime || ''} // 기본값 처리
-                        onChange={(e) => setEditTask({...editTask, startTime: e.target.value})}
-                        className="border rounded p-2"
-                    />
+                    <div className="flex gap-6">
+                        <input
+                            type="time"
+                            name="startTime"
+                            value={editTask.startTime || ''}
+                            onChange={(e) => setEditTask({ ...editTask, startTime: e.target.value })}
+                            className="flex-1 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        />
+                        <input
+                            type="time"
+                            name="endTime"
+                            value={editTask.endTime || ''}
+                            onChange={(e) => setEditTask({ ...editTask, endTime: e.target.value })}
+                            className="flex-1 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        />
+                    </div>
 
-                    <input
-                        type="time"
-                        name="endTime"
-                        value={editTask.endTime || ''} // 기본값 처리
-                        onChange={(e) => setEditTask({...editTask, endTime: e.target.value})}
-                        className="border rounded p-2"
-                    />
-
-                    {/* 카테고리 선택 */}
                     <div className="relative">
                         <button
                             onClick={() =>
-                                setEditTask({
-                                    ...editTask,
-                                    categoryDropdownOpen: !editTask.categoryDropdownOpen,
-                                })
+                                setEditTask({ ...editTask, categoryDropdownOpen: !editTask.categoryDropdownOpen })
                             }
-                            className="border rounded p-2 w-full text-left flex justify-between items-center"
+                            className="w-full border border-gray-300 rounded-lg p-3 text-left flex justify-between items-center focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         >
                             {categories.find((cat) => String(cat.categoryId) === String(editTask.categoryId)) ? (
                                 <span className="flex items-center gap-2">
                                     <span
                                         style={{
-                                            backgroundColor: categories.find((cat) => String(cat.categoryId) === String(editTask.categoryId))?.color,
+                                            backgroundColor: categories.find(
+                                                (cat) => String(cat.categoryId) === String(editTask.categoryId)
+                                            )?.color,
                                             width: '15px',
                                             height: '15px',
                                             borderRadius: '50%',
                                             display: 'inline-block',
                                         }}
                                     ></span>
-                                    {categories.find((cat) => String(cat.categoryId) === String(editTask.categoryId))?.name}
+                                    {
+                                        categories.find((cat) => String(cat.categoryId) === String(editTask.categoryId))
+                                            ?.name
+                                    }
                                 </span>
                             ) : (
                                 '카테고리를 선택하세요'
@@ -99,7 +98,7 @@ const TaskEditModal = ({ isOpen, onClose, onSubmit, task, categories }) => {
                             <span className="ml-2">{editTask.categoryDropdownOpen ? '▲' : '▼'}</span>
                         </button>
                         {editTask.categoryDropdownOpen && (
-                            <ul className="absolute border rounded mt-1 bg-white shadow-lg w-full max-h-40 overflow-auto z-10">
+                            <ul className="absolute left-0 mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-40 overflow-auto">
                                 {categories.map((category) => (
                                     <li
                                         key={category.categoryId}
@@ -110,8 +109,10 @@ const TaskEditModal = ({ isOpen, onClose, onSubmit, task, categories }) => {
                                                 categoryDropdownOpen: false,
                                             })
                                         }
-                                        className={`flex items-center gap-2 p-2 cursor-pointer ${
-                                            editTask.categoryId === category.categoryId ? 'bg-gray-200' : ''
+                                        className={`flex items-center gap-2 p-3 cursor-pointer ${
+                                            editTask.categoryId === category.categoryId
+                                                ? 'bg-blue-100'
+                                                : 'hover:bg-gray-100'
                                         }`}
                                     >
                                         <span
@@ -131,17 +132,16 @@ const TaskEditModal = ({ isOpen, onClose, onSubmit, task, categories }) => {
                     </div>
                 </div>
 
-                {/* 버튼 */}
-                <div className="flex justify-end gap-2 mt-4">
+                <div className="flex justify-end gap-4 mt-8">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 bg-gray-500 text-white rounded"
+                        className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
                     >
                         취소
                     </button>
                     <button
                         onClick={() => onSubmit(editTask)}
-                        className="px-4 py-2 bg-green-500 text-white rounded"
+                        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
                     >
                         저장
                     </button>

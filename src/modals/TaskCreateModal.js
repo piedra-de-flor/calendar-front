@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import moment from 'moment';
 import CategoryManagementModal from './CategoryManagementModal'; // CategoryManagementModal 추가
-import { createTask } from "../api/CalendarApi"; // createTask API 함수 추가
+import { createTask } from "../api/CalendarApi";
+import {useAlert} from "../root/AlertProvider"; // createTask API 함수 추가
 
 const TaskCreateModal = ({ isOpen, onClose, selectedRange, categories, setEvents, refreshTodayTasks, refreshCategories , setCategories }) => {
+    const { addAlert } = useAlert();
     const [newTask, setNewTask] = useState({
         description: '',
         startTime: '',
@@ -60,6 +62,7 @@ const TaskCreateModal = ({ isOpen, onClose, selectedRange, categories, setEvents
         } catch (error) {
             console.error('Error creating tasks:', error);
             setError('Failed to create tasks. Please try again.');
+            addAlert("일정 생성 중 오류가 발생했습니다, 잠시 후 다시 시도해주세요.")
         }
     };
 

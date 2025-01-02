@@ -10,16 +10,18 @@ export default function SignUp() {
 
     const [isEmailChecked, setIsEmailChecked] = useState(false);
     const [isEmailValid, setIsEmailValid] = useState(false); // 이메일 사용 가능 여부
+    const [statusMessage, setStatusMessage] = useState(null); // 상태 메시지 관리
     const navigate = useNavigate(); // useNavigate 훅 초기화
 
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
+        setStatusMessage(null); // 입력 중에는 상태 메시지 초기화
     };
 
     const handleEmailCheck = async () => {
         if (formData.email === '') {
-            alert('Please enter an email to check.');
+            setStatusMessage({ type: 'error', text: '이메일을 입력한 후 확인해주세요.' });
             return;
         }
 
@@ -32,27 +34,25 @@ export default function SignUp() {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error(`HTTP Error: ${response.status} - ${errorText}`);
                 throw new Error('Failed to check email.');
             }
 
-            // 서버 응답을 JSON으로 처리
-            const isDuplicated = await response.json(); // true = 중복, false = 사용 가능
-            console.log('Email check response:', isDuplicated);
+            const isDuplicated = await response.json(); // 서버 응답 처리
             setIsEmailChecked(true);
-            setIsEmailValid(!isDuplicated); // 중복 여부를 반대로 설정
+            setIsEmailValid(!isDuplicated); // 중복 여부 설정
+            setStatusMessage({
+                type: isDuplicated ? 'error' : 'success',
+                text: isDuplicated ? '이 이메일은 이미 사용 중입니다.' : '사용 가능한 이메일입니다!',
+            });
         } catch (error) {
+            setStatusMessage({ type: 'error', text: '이메일 확인 중 문제가 발생했습니다.' });
             console.error('Error during email check:', error);
-            alert('Error checking email. Please try again.');
         }
     };
 
-
-
     const handleSubmit = async () => {
         if (!isEmailChecked || !isEmailValid) {
-            alert('Please check the email for duplicates first.');
+            setStatusMessage({ type: 'error', text: '이메일 중복 검사를 완료해주세요.' });
             return;
         }
 
@@ -66,19 +66,17 @@ export default function SignUp() {
             });
 
             if (response.ok) {
-                alert('SignUp successful! Redirecting to login page...');
-                navigate('/'); // 로그인 페이지로 이동
+                setStatusMessage({ type: 'success', text: '회원가입이 성공적으로 완료되었습니다!' });
+                setTimeout(() => navigate('/'), 2000); // 2초 후 로그인 페이지로 이동
             } else {
                 const errorMessage = await response.text();
-                console.error(`SignUp failed: ${errorMessage}`);
-                alert(`SignUp failed: ${errorMessage}`);
+                setStatusMessage({ type: 'error', text: `회원가입 실패: ${errorMessage}` });
             }
         } catch (error) {
             console.error('Error during sign up:', error);
-            alert('Error during sign up. Please try again.');
+            setStatusMessage({ type: 'error', text: '회원가입 중 문제가 발생했습니다.' });
         }
     };
-
 
     return (
         <div
@@ -98,6 +96,17 @@ export default function SignUp() {
                 </div>
 
                 <h2 className="text-xl font-bold mb-4 text-center">Sign Up</h2>
+
+                {/* 상태 메시지 */}
+                {statusMessage && (
+                    <div
+                        className={`p-4 mb-4 rounded ${
+                            statusMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        }`}
+                    >
+                        {statusMessage.text}
+                    </div>
+                )}
 
                 {/* Name 입력 필드 */}
                 <div className="mb-4">
@@ -135,17 +144,6 @@ export default function SignUp() {
                             중복 검사
                         </button>
                     </div>
-                    {isEmailChecked && (
-                        <p
-                            className={`mt-2 ${
-                                isEmailValid ? 'text-green-600' : 'text-red-600'
-                            }`}
-                        >
-                            {isEmailValid
-                                ? 'Email is available!'
-                                : 'This email is already in use.'}
-                        </p>
-                    )}
                 </div>
 
                 {/* Password 입력 필드 */}

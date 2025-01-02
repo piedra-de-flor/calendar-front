@@ -31,3 +31,12 @@
 .calendar-view {
     margin-top: 40px; /* 상단 여백 40px */
 }
+
+.rbc-day-slot {
+    position: relative; /* 기본 위치 설정 */
+}
+
+.rbc-selected-cell {
+    z-index: 10; /* 드래그된 영역을 강조된 날짜 위로 렌더링 */
+    background-color: rgba(0, 123, 255, 0.3) !important; /* 드래그된 영역 스타일 */
+}

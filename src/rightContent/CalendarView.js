@@ -13,10 +13,12 @@ import {
     updateTask,
     updateTaskCategory,
 } from "../api/CalendarApi";
+import {useAlert} from "../root/AlertProvider";
 
 const localizer = momentLocalizer(moment);
 
-const CalendarView = ({ refreshTodayTasks }) => {
+const CalendarView = ({ refreshTodayTasks, highlightedSlots = [] }) => {
+    const { addAlert } = useAlert();
     const [events, setEvents] = useState([]); // 캘린더 이벤트 데이터
     const [categories, setCategories] = useState([]); // 카테고리 데이터
     const [categoryTrigger, setCategoryTrigger] = useState(0);
@@ -31,6 +33,37 @@ const CalendarView = ({ refreshTodayTasks }) => {
 
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editTask, setEditTask] = useState(null);
+
+    const [temporarySlots, setTemporarySlots] = useState([]);
+    const [highlightedDays, setHighlightedDays] = useState(new Set());
+    const [blinkState, setBlinkState] = useState(true);
+
+    useEffect(() => {
+        if (highlightedSlots.length > 0) {
+            const highlightedDates = new Set(
+                highlightedSlots.flatMap((slot) => [
+                    moment(slot.start).startOf('day').toISOString(),
+                    moment(slot.end).startOf('day').toISOString(),
+                ])
+            );
+
+            setHighlightedDays(highlightedDates);
+
+            let blinkCount = 0;
+            const interval = setInterval(() => {
+                setBlinkState((prev) => !prev); // Toggle blinkState
+                blinkCount++;
+
+                if (blinkCount >= 20) { // 총 10번 깜박임 (20번 토글)
+                    clearInterval(interval);
+                    setHighlightedDays(new Set()); // 강조 초기화
+                }
+            }, 1000); // 1초 주기
+
+            setTemporarySlots([]);
+            return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+        }
+    }, [highlightedSlots]);
 
     // 일정 데이터 요청 함수
     const fetchEvents = async ({ startDate, endDate }) => {
@@ -204,6 +237,7 @@ const CalendarView = ({ refreshTodayTasks }) => {
                         backgroundColor: categories.find(
                             (cat) => cat.categoryId === updatedTask.categoryId
                         )?.color || event.backgroundColor,
+                        categoryId: updatedTask.categoryId,
                     }
                     : event
             );
@@ -276,41 +310,63 @@ const CalendarView = ({ refreshTodayTasks }) => {
             >
             <Calendar
                 localizer={localizer}
-                events={events}
+                events={[...events, ...temporarySlots]} // 기존 이벤트와 임시 공통 일정 병합
                 startAccessor="start"
                 endAccessor="end"
                 titleAccessor="title"
                 style={{ height: '80vh', width: '100%' }}
                 views={['month', 'week']}
                 selectable
-                onSelectSlot={handleSelectSlot}
+                onSelectSlot={handleSelectSlot} // 빈 날짜를 클릭하거나 여러 날짜를 드래그하여 선택했을 때
+                onSelectEvent={(event) => {
+                    console.log('Event selected:', event);
+                }}
+                onNavigate={handleNavigate} // 캘린더 이동 이벤트 핸들러
+                onView={handleViewChange} // 뷰 변경 이벤트 핸들러
+                dayPropGetter={(date) => {
+                    const isoDate = moment(date).startOf('day').toISOString();
+                    const isHighlighted = highlightedDays.has(isoDate);
+
+                    if (isHighlighted) {
+                        return {
+                            style: {
+                                backgroundColor: 'rgba(255, 165, 0, 0.15)', // 투명한 주황색 배경
+                                border: '2px solid rgba(255, 165, 0, 0.5)', // 반투명 테두리
+                                borderRadius: '5px',
+                                opacity: blinkState ? 1 : 0, // 깜박임 상태
+                                transition: 'opacity 1s ease-in-out', // 서서히 깜박임
+                                zIndex: 0, // 낮은 z-index로 설정
+                                pointerEvents: 'none', // 드래그 및 클릭 이벤트 방해 방지
+                            },
+                        };
+                    }
+
+                    return {}; // 기본 스타일
+                }}
                 eventPropGetter={(event) => ({
                     style: {
                         backgroundColor: event.backgroundColor || '#3174ad',
                         color: 'white',
                         borderRadius: '3px',
-                        padding: '2px 4px', // 패딩 줄이기
-                        height: '26px', // 높이 줄이기
-                        lineHeight: '20px', // 텍스트 정렬
-                        overflow: 'hidden', // 텍스트 잘리게 하기
+                        padding: '2px 4px',
+                        height: '26px',
+                        lineHeight: '20px',
+                        overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
                     },
                 })}
-
                 components={{
                     event: (props) => (
                         <CustomEvent {...props} handleEventContextMenu={handleEventContextMenu} />
                     ),
                 }}
-
-                onNavigate={handleNavigate}
                 view={currentView}
-                onView={handleViewChange}
                 date={currentDate}
                 dayLayoutAlgorithm="no-overlap"
                 popup
             />
+
 
             {/* 일정 생성 모달 */}
             {modalOpen && (

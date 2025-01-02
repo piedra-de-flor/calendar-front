@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import '../root/MainPage.css';
 import UserInfo from './UserInfo';
 import TodayList from './TodayList';
@@ -6,7 +6,7 @@ import FriendTeamList from './FriendTeamList';
 import NotificationIcon from './NotificationIcon';
 import NotificationModal from '../modals/NotificationModal';
 
-const LeftSidebar = ({ refreshTrigger, refreshFriendListTrigger, refreshTeamListTrigger, onManageFriends, onManageTeams }) => {
+const LeftSidebar = ({ refreshTrigger, refreshFriendListTrigger, refreshTeamListTrigger, onManageFriends, onManageTeams, setHighlightedSlots }) => {
     const [activeTab, setActiveTab] = useState('today'); // 기본 탭
     const [isNotificationOpen, setIsNotificationOpen] = useState(false); // 알림 창 열림 상태
     const [unreadCount, setUnreadCount] = useState(0); // 읽지 않은 알림 수
@@ -70,6 +70,7 @@ const LeftSidebar = ({ refreshTrigger, refreshFriendListTrigger, refreshTeamList
                         onManageTeams={onManageTeams}
                         refreshFriendListTrigger={refreshFriendListTrigger}
                         refreshTeamListTrigger={refreshTeamListTrigger}
+                        setHighlightedSlots={setHighlightedSlots} // 함수 전달
                     />
                 )}
             </div>

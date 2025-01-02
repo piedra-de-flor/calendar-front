@@ -28,10 +28,11 @@ export const updateTask = (updatedTask) => {
         "/schedule/task",
         {
             taskId: updatedTask.taskId,
-            description: updatedTask.description,
-            start: `${updatedTask.date}T${updatedTask.startTime}`,
-            end: `${updatedTask.date}T${updatedTask.endTime}`,
             categoryId: updatedTask.categoryId,
+            date: updatedTask.date,
+            startTime: `${updatedTask.date}T${updatedTask.startTime}`,
+            endTime: `${updatedTask.date}T${updatedTask.endTime}`,
+            description: updatedTask.description,
         }
     );
 };

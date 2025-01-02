@@ -4,8 +4,10 @@ import {
     markNotificationAsRead,
     subscribeToNotifications,
 } from "../api/notificationApi";
+import {useAlert} from "../root/AlertProvider";
 
 const NotificationModal = ({ isOpen, onClose, sidebarRef }) => {
+    const { addAlert } = useAlert();
     const [notifications, setNotifications] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
@@ -21,6 +23,7 @@ const NotificationModal = ({ isOpen, onClose, sidebarRef }) => {
             setCurrentPage(page);
         } catch (error) {
             console.error("Error fetching notifications:", error);
+            addAlert("알림 데이터 로드 중 오류가 발생했습니다, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -37,6 +40,7 @@ const NotificationModal = ({ isOpen, onClose, sidebarRef }) => {
             );
         } catch (error) {
             console.error("Error marking notification as read:", error);
+            addAlert("알림 읽기 처리 중 오류가 발생했습니다, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -54,6 +58,7 @@ const NotificationModal = ({ isOpen, onClose, sidebarRef }) => {
             );
         } catch (error) {
             console.error("Error marking all notifications as read:", error);
+            addAlert("알림 읽기 처리 중 오류가 발생했습니다, 잠시 후 다시 시도해주세요.")
         }
     };
 

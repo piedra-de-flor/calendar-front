@@ -3,7 +3,8 @@ import axios from "axios";
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({
-    baseURL: "http://43.200.155.29:8080", // 공통 API URL
+    baseURL: "http://43.200.155.29:8080",
+    //baseURL: "http://localhost:8080",
     timeout: 10000, // 요청 제한 시간 설정
     headers: {
         "Content-Type": "application/json", // 모든 요청에 공통 Content-Type

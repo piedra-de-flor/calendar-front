@@ -4,6 +4,7 @@ import {
     updateCategory,
     deleteCategory,
 } from "../api/categoryApi";
+import {useAlert} from "../root/AlertProvider";
 
 const CategoryManagementModal = ({
                                      isOpen,
@@ -14,6 +15,7 @@ const CategoryManagementModal = ({
                                      refreshTodayTasks,
                                      refreshCategories
                                  }) => {
+    const { addAlert } = useAlert();
     const [newCategory, setNewCategory] = useState({ name: "", color: "" });
     const [categoryEditMode, setCategoryEditMode] = useState(false);
     const [colorDropdownOpen, setColorDropdownOpen] = useState(false);
@@ -44,7 +46,7 @@ const CategoryManagementModal = ({
             )?.value;
 
             if (!colorName) {
-                alert("유효하지 않은 색상입니다.");
+                addAlert("유효하지 않은 색상입니다.")
                 return;
             }
 
@@ -73,7 +75,7 @@ const CategoryManagementModal = ({
 
                 refreshTodayTasks();
                 refreshCategories();
-                alert("카테고리가 성공적으로 수정되었습니다.");
+                addAlert("카테고리가 수정되었습니다.")
             } else {
                 const newCategoryId = await createCategory({
                     name: newCategory.name,
@@ -86,14 +88,14 @@ const CategoryManagementModal = ({
                 ]);
 
                 refreshCategories();
-                alert("새 카테고리가 추가되었습니다.");
+                addAlert("새 카테고리가 추가되었습니다.")
             }
 
             setNewCategory({ name: "", color: "" });
             setCategoryEditMode(false);
         } catch (error) {
             console.error("Error handling category:", error);
-            alert("카테고리 처리 중 오류가 발생했습니다.");
+            addAlert("카테고리 수정 중 오류가 발생했습니다, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -120,10 +122,10 @@ const CategoryManagementModal = ({
 
             refreshTodayTasks();
             refreshCategories();
-            alert("카테고리가 성공적으로 삭제되었습니다.");
+            addAlert("카테고리가 삭제되었습니다.")
         } catch (error) {
             console.error("Error deleting category:", error);
-            alert("카테고리 삭제 중 오류가 발생했습니다.");
+            addAlert("카테고리 삭제 중 오류가 발생했습니다, 잠시 후 다시 시도해주세요.")
         }
     };
 

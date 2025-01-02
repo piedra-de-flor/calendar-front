@@ -14,8 +14,11 @@ import {
     rejectRequest
 } from "../api/InvitationApi";
 import TeamCreateModal from '../modals/TeamCreateModal';
+import VoteManagementModal from '../modals/VoteManagementModal';
+import {useAlert} from "../root/AlertProvider";
 
 const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
+    const { addAlert } = useAlert();
     const [teams, setTeams] = useState([]);
     const [friends, setFriends] = useState([]);
     const [sentTeamInvitations, setSentTeamInvitations] = useState([]);
@@ -31,6 +34,7 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
     const [leaveConfirmModal, setLeaveConfirmModal] = useState({ visible: false, teamId: null }); // 탈퇴 확인 모달 상태
 
     const teamMembersContextRef = useRef(null); // 팀 멤버 메뉴 ref
+    const [voteManagementModal, setVoteManagementModal] = useState({ visible: false, teamId: null });
 
     // 데이터 가져오기
     const fetchTeamsData = async () => {
@@ -49,6 +53,7 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
             setFriends(friendsData);
         } catch (error) {
             console.error('Error fetching data:', error);
+            addAlert("데이터를 가져오는데 실패했습니다.")
         } finally {
             setLoading(false);
         }
@@ -119,7 +124,7 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
             fetchTeamsData();
         } catch (error) {
             console.error('Error creating team or sending invitations:', error);
-            alert('팀 생성 중 오류가 발생했습니다.');
+            addAlert("팀 생성중 오류가 발생했습니다, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -130,6 +135,7 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
             refreshTeamList();
         } catch (error) {
             console.error("Error accepting request:", error);
+            addAlert("팀 합류 요청 수락 요청 실패, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -140,6 +146,7 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
             refreshTeamList();
         } catch (error) {
             console.error("Error rejecting request:", error);
+            addAlert("팀 합류 요청 거절 요청 실패, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -149,6 +156,7 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
             await fetchTeamsData();
         } catch (error) {
             console.error("Error cancel request:", error);
+            addAlert("팀 합류 요청 취소 실패, 잠시 후 다시 시도해주세요.")
         }
     };
 
@@ -161,6 +169,13 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
             mouseY: rect.top, // 요소의 상단
         });
         setSelectedTeam(team); // 선택된 팀 설정
+    };
+
+// 투표 관리
+    const handleTeamVote = (teamId) => {
+        console.log("Team ID for Vote:", teamId); // 로그 확인
+        setVoteManagementModal({ visible: true, teamId });
+        setTeamContextMenu(null); // 컨텍스트 메뉴 닫기
     };
 
     // 탈퇴 확인 모달 열기
@@ -179,8 +194,10 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
             await fetchTeamsData(); // 팀 목록 새로고침
             await fetchSentRequests();
             refreshTeamList();
+            addAlert("팀에서 탈퇴하였습니다.")
         } catch (error) {
             console.error('Error leaving team:', error);
+            addAlert("팀 탈퇴 실패, 잠시 후 다시 시도해주세요.")
         } finally {
             setLeaveConfirmModal({ visible: false, teamId: null }); // 모달 닫기
         }
@@ -198,6 +215,7 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
                 y: teamContextMenu.mouseY, // 기존 Y 좌표 사용
             });
         } catch (error) {
+            addAlert("팀 멤버 로드 실패, 잠시 후 다시 시도해주세요.")
             console.error('Error fetching team members:', error);
             setTeamContextMenu(null);
             setTeamMembersContext({
@@ -351,6 +369,12 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
                         팀 멤버 확인
                     </button>
                     <button
+                        onClick={() => handleTeamVote(selectedTeam.teamId)}
+                        className="w-full text-left px-4 py-2 text-blue-500 hover:bg-blue-100"
+                    >
+                        투표 관리
+                    </button>
+                    <button
                         onClick={handleLeaveTeam}
                         className="w-full text-left px-4 py-2 text-red-500 hover:bg-red-100"
                     >
@@ -428,6 +452,13 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
                         </div>
                     )}
                 </div>
+            )}
+
+            {voteManagementModal.visible && (
+                <VoteManagementModal
+                    teamId={voteManagementModal.teamId}
+                    onClose={() => setVoteManagementModal({ visible: false, teamId: null })}
+                />
             )}
         </div>
     );

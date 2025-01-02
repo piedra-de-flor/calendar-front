@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './MainPage.css';
 import LeftSidebar from '../leftSidebar/LeftSidebar';
 import CalendarView from '../rightContent/CalendarView';
@@ -11,10 +11,31 @@ const MainPage = () => {
     const [todayTasksTrigger, setTodayTasksTrigger] = useState(0);
     const [teamListTrigger, setTeamListTrigger] = useState(0);
     const [friendListTrigger, setFriendListTrigger] = useState(0);
+    const [highlightedSlots, setHighlightedSlots] = useState([]);
+    const [slotsToHighlight, setSlotsToHighlight] = useState([]);
+    const [triggerHighlight, setTriggerHighlight] = useState(false); // 강조 상태 제어
 
     const params = new URLSearchParams(window.location.search);
     const accessToken = params.get('accessToken');
     if (!accessToken) throw new Error('Access token is missing.');
+
+    // "캘린더에서 보기" 클릭 시 동작
+    const handleViewInCalendar = (slots) => {
+        setHighlightedSlots(slots); // 강조할 슬롯 설정
+        setActiveRightTab('calendar'); // 탭을 캘린더로 전환
+        setTriggerHighlight(true); // 강조 트리거 활성화
+    };
+
+    // 탭 전환 시 강조 상태 초기화
+    useEffect(() => {
+        if (activeRightTab === 'calendar' && triggerHighlight) {
+            setSlotsToHighlight(highlightedSlots); // 강조할 슬롯 설정
+            setHighlightedSlots([]); // `highlightedSlots` 초기화
+            setTriggerHighlight(false); // 트리거 비활성화
+        } else if (activeRightTab !== 'calendar') {
+            setSlotsToHighlight([]); // 다른 탭으로 이동 시 슬롯 초기화
+        }
+    }, [activeRightTab, highlightedSlots, triggerHighlight]);
 
     const refreshTodayTasks = () => {
         setTodayTasksTrigger((prev) => prev + 1);
@@ -48,6 +69,7 @@ const MainPage = () => {
         if (activeRightTab === 'calendar') {
             return <CalendarView
                 refreshTodayTasks={refreshTodayTasks}
+                highlightedSlots={slotsToHighlight}
             />;
         }
     };
@@ -62,6 +84,7 @@ const MainPage = () => {
                              refreshTeamListTrigger={refreshTeamList}
                              onManageFriends={() => setActiveRightTab('friends')}
                              onManageTeams={() => setActiveRightTab('teams')}
+                             setHighlightedSlots={handleViewInCalendar} // 상태 전달
                 />
             </div>
 

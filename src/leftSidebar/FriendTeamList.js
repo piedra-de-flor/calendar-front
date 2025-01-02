@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { fetchFriends } from '../api/FriendApi';
 import { fetchTeams } from '../api/TeamApi';
 import { FaCog } from 'react-icons/fa';
+import AvailableSlotsModal from "../modals/AvailableSlotsModal";
 
-const FriendTeamList = ({ onManageFriends, onManageTeams, refreshFriendListTrigger, refreshTeamListTrigger }) => {
+const FriendTeamList = ({ onManageFriends, onManageTeams, refreshFriendListTrigger, refreshTeamListTrigger, setHighlightedSlots }) => {
     const [friends, setFriends] = useState([]); // 친구 목록
     const [teams, setTeams] = useState([]); // 팀 목록
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -115,6 +117,26 @@ const FriendTeamList = ({ onManageFriends, onManageTeams, refreshFriendListTrigg
                         </li>
                     ))}
                 </ul>
+            )}
+
+            <div className="p-6">
+                {/* 공통 일정 찾기 버튼 */}
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                >
+                    공통 일정 찾기
+                </button>
+            </div>
+
+            {/* 공통 일정 찾기 모달 */}
+            {isModalOpen && (
+                <AvailableSlotsModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    teams={teams} // 팀 목록 전달
+                    setCalendar={({ highlightedSlots }) => setHighlightedSlots(highlightedSlots)} // 전달
+                />
             )}
         </div>
     );
