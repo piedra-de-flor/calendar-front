@@ -1,11 +1,6 @@
-import apiClient from "./index"; // apiClient import
+import apiClient from "./index";
+import config from "tailwindcss/defaultConfig"; // apiClient import
 
-/**
- * 알림 목록 가져오기
- * @param {number} page - 현재 페이지 번호
- * @param {number} size - 페이지 크기
- * @returns {Promise} 알림 데이터 목록
- */
 export const getNotifications = async (page, size) => {
     const response = await apiClient.get("/notifications", {
         params: { page, size },
@@ -13,37 +8,34 @@ export const getNotifications = async (page, size) => {
     return response.data;
 };
 
-/**
- * 알림 읽음 처리
- * @param {string} notificationId - 읽음 처리할 알림 ID
- * @returns {Promise} 읽음 처리 결과
- */
 export const markNotificationAsRead = async (notificationId) => {
     await apiClient.patch(`/notification/${notificationId}`);
 };
 
-/**
- * SSE 연결 설정
- * @param {function} onMessage - 새 알림을 처리하는 콜백 함수
- * @returns {EventSource} SSE 객체
- */
 export const subscribeToNotifications = (onMessage) => {
-    const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get("accessToken");
-
-    if (!accessToken) {
-        throw new Error("Access token is missing.");
-    }
-
-    const source = new EventSource(
-        `${apiClient.defaults.baseURL}/notification/subscribe?token=${accessToken}`
+    // 쿠키에서 accessToken 읽기
+    const cookies = document.cookie.split("; ");
+    const accessTokenCookie = cookies.find((cookie) =>
+        cookie.startsWith("accessToken=")
     );
 
+    if (!accessTokenCookie) {
+        console.warn("Access token is missing in cookies.");
+        return;
+    }
+
+    const accessToken = accessTokenCookie.split("=")[1];
+
+    // SSE 요청을 Authorization 헤더를 통해 전달
+    const source = new EventSource(`${apiClient.defaults.baseURL}/notification/subscribe/${accessToken}`);
+
+    // SSE 메시지 처리
     source.onmessage = (event) => {
         const newNotification = JSON.parse(event.data);
         onMessage(newNotification);
     };
 
+    // SSE 오류 처리
     source.onerror = (error) => {
         console.error("SSE connection error:", error);
         source.close();
@@ -51,3 +43,4 @@ export const subscribeToNotifications = (onMessage) => {
 
     return source;
 };
+

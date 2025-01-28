@@ -64,3 +64,23 @@ export const resultVote = async (voteId) => {
     }
 };
 
+export const isCasted = async (voteId) => {
+    try {
+        const response = await apiClient.get(`/cast/whether/${voteId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to read whether cast:', error);
+        throw error;
+    }
+};
+
+export const whatICasted = async (voteId) => {
+    try {
+        const response = await apiClient.get(`/casted/options/${voteId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to read what I casted:', error);
+        throw error;
+    }
+};
+

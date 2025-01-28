@@ -26,7 +26,6 @@ const AvailableSlotsModal = ({ isOpen, onClose, teams, setCalendar }) => {
     useEffect(() => {
         if (isOpen) {
             setSelectedTeam(null); // 선택 초기화
-            setSelectedTeam(null); // 선택 초기화
             setTeamMembers([]); // 멤버 초기화
             setMemberError('');
             setAvailableSlots([]); // 공통 일정 초기화
@@ -262,7 +261,7 @@ const AvailableSlotsModal = ({ isOpen, onClose, teams, setCalendar }) => {
                                                 className="p-3 bg-white border rounded-lg"
                                             >
                                                 <p className="text-gray-800">
-                                                    {moment(slot.start).format('YYYY-MM-DD HH:mm')} -{' '}
+                                                    {moment(slot.start).format('dddd / YYYY-MM-DD HH:mm')} ~{' '}
                                                     {moment(slot.end).format('YYYY-MM-DD HH:mm')}
                                                 </p>
                                                 <p className="text-gray-500 text-sm mt-1">

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { fetchUserInfo } from "../api/userApi";
+import {fetchTodayTasks} from "../api/todayApi";
 
 const UserInfo = () => {
     const [userInfo, setUserInfo] = useState({ name: "", email: "" });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    let isMounted = false;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -18,7 +21,10 @@ const UserInfo = () => {
             }
         };
 
-        fetchData();
+        if (!isMounted) {
+            isMounted = true;
+            fetchData();
+        }
     }, []);
 
     if (loading) {

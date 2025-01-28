@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { readVotes, vote, readVote, completeVote, resultVote } from "../api/VoteApi";
+import {readVotes, vote, readVote, completeVote, resultVote, isCasted, whatICasted} from "../api/VoteApi";
 import {useAlert} from "../root/AlertProvider";
 
 const VoteManagementModal = ({ teamId, onClose }) => {
@@ -11,12 +11,24 @@ const VoteManagementModal = ({ teamId, onClose }) => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [detailsLoading, setDetailsLoading] = useState(false);
     const [resultIds, setResultIds] = useState([]);
+    const [castedOptionIds, setCastedOptionIds] = useState([]);
 
     const fetchVotes = async () => {
         try {
             setLoading(true);
             const voteData = await readVotes(teamId);
-            setVotes(voteData);
+
+            const castStatuses = await Promise.all(
+                voteData.map((vote) => isCasted(vote.voteId))
+            );
+
+            // `isCasted`를 각 투표 데이터에 병합
+            const updatedVotes = voteData.map((vote, index) => ({
+                ...vote,
+                isCasted: castStatuses[index],
+            }));
+
+            setVotes(updatedVotes); // 업데이트된 투표 데이터 설정
         } catch (err) {
             console.error("Error fetching votes:", err);
             addAlert("투표 데이터를 불러오는데 실패했습니다.")
@@ -36,9 +48,18 @@ const VoteManagementModal = ({ teamId, onClose }) => {
             setSelectedVote(detailedVote);
             setSelectedOptions([]);
 
+            // 사용자가 선택한 옵션 가져오기
+            const castedOptions = await whatICasted(vote.voteId);
+            setResultIds([]); // 결과 초기화
+            setCastedOptionIds(castedOptions); // 사용자가 선택한 옵션 ID 저장
+
             if (vote.voteStatus === "CLOSED") {
-                const results = await resultVote(vote.voteId);
-                setResultIds(Object.keys(results.results).map((id) => parseInt(id, 10)));
+                const results = await resultVote(vote.voteId); // API 호출
+                const resultOptions = Object.entries(results.results).map(([id, name]) => ({
+                    optionId: parseInt(id, 10),
+                    optionName: name,
+                }));
+                setResultIds(resultOptions.map((result) => result.optionId)); // 옵션 ID 저장
             } else {
                 setResultIds([]);
             }
@@ -163,6 +184,11 @@ const VoteManagementModal = ({ teamId, onClose }) => {
                                         </div>
                                         <div className="text-sm text-gray-500">
                                             <p>{formatRemainingTime(vote.closeAt)}</p>
+                                            <p>
+                                                {vote.isCasted
+                                                    ? <span className="text-blue-600">투표 완료</span>
+                                                    : <span className="text-red-600">미투표</span>}
+                                            </p>
                                         </div>
                                     </div>
                                 ))}
@@ -217,6 +243,8 @@ const VoteManagementModal = ({ teamId, onClose }) => {
                                     {Object.entries(selectedVote.options).map(([optionName, votesData]) => {
                                         const optionId = parseInt(Object.keys(votesData)[0], 10);
                                         const isResult = resultIds.includes(optionId);
+                                        const isCasted =
+                                            selectedVote.voteStatus === "OPEN" && castedOptionIds.includes(optionId); // 투표 완료 전만 강조
 
                                         return (
                                             <div
@@ -224,13 +252,24 @@ const VoteManagementModal = ({ teamId, onClose }) => {
                                                 className={`p-4 rounded-lg shadow-md flex items-center justify-between ${
                                                     isResult
                                                         ? "bg-blue-100 border-2 border-blue-500"
-                                                        : selectedVote.voteStatus === "CLOSED"
-                                                            ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-                                                            : "bg-white text-black"
+                                                        : isCasted
+                                                            ? "bg-yellow-100 border-2 border-yellow-400" // 연노란색 배경 강조
+                                                            : selectedVote.voteStatus === "CLOSED"
+                                                                ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                                                : "bg-white text-black"
                                                 }`}
                                             >
                                                 <span className="text-lg font-medium">
-                                                    {optionName}
+                                                    {(() => {
+                                                        const days = ["일", "월", "화", "수", "목", "금", "토"];
+                                                        const parts = optionName.split(" - ");
+                                                        const formatWithDay = (dateString) => {
+                                                            const date = new Date(dateString);
+                                                            const day = days[date.getDay()];
+                                                            return `${day}요일 / ${dateString}`;
+                                                        };
+                                                        return `${formatWithDay(parts[0])} - ${formatWithDay(parts[1])}`;
+                                                    })()}
                                                 </span>
                                                 <span className="text-lg font-medium">
                                                     {votesData[optionId]} 표

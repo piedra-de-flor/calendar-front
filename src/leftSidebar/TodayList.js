@@ -6,6 +6,8 @@ const TodayList = ({ refreshTrigger }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    let isMounted = false;
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -19,8 +21,12 @@ const TodayList = ({ refreshTrigger }) => {
             }
         };
 
-        fetchData();
-    }, [refreshTrigger]); // refreshTrigger가 변경될 때마다 실행
+        if (!isMounted) {
+            isMounted = true;
+            fetchData();
+        }
+    }, [refreshTrigger]);
+
 
     if (loading) {
         return <div className="text-center text-gray-600">Loading today's tasks...</div>;

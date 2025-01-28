@@ -20,7 +20,7 @@ const TaskCreateModal = ({ isOpen, onClose, selectedRange, categories, setEvents
         try {
             const selectedCategory = categories.find((category) => category.categoryId === newTask.categoryId);
             if (!selectedCategory) {
-                alert('유효하지 않은 카테고리입니다.');
+                addAlert("유효하지 않은 카테고리입니다.")
                 return;
             }
 
@@ -62,7 +62,7 @@ const TaskCreateModal = ({ isOpen, onClose, selectedRange, categories, setEvents
         } catch (error) {
             console.error('Error creating tasks:', error);
             setError('Failed to create tasks. Please try again.');
-            addAlert("일정 생성 중 오류가 발생했습니다, 잠시 후 다시 시도해주세요.")
+            addAlert(error.response.data.message);
         }
     };
 
@@ -73,8 +73,8 @@ const TaskCreateModal = ({ isOpen, onClose, selectedRange, categories, setEvents
         const end = moment(selectedRange.end).subtract(1, 'days'); // 마지막 날 포함
 
         return start.isSame(end, 'day')
-            ? start.format('YYYY-MM-DD') // 단일 날짜
-            : `${start.format('YYYY-MM-DD')} ~ ${end.format('YYYY-MM-DD')}`; // 범위
+            ? start.format('dddd / YYYY-MM-DD') // 단일 날짜
+            : `${start.format('dddd / YYYY-MM-DD')} ~ ${end.format('dddd / YYYY-MM-DD')}`; // 범위
     };
 
     return (

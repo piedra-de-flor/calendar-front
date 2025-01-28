@@ -2,11 +2,13 @@ import axios from "axios";
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({
-    baseURL: "http://43.200.155.29:8080",
+    baseURL: "https://woodking2-server.site:443",
+    //baseURL: "http://localhost:8080",
     timeout: 10000,
     headers: {
         "Content-Type": "application/json",
     },
+
     withCredentials: true, // 쿠키를 포함하도록 설정
 });
 

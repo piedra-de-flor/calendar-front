@@ -77,24 +77,13 @@ const CalendarView = ({ refreshTodayTasks, highlightedSlots = [] }) => {
 
                     const [startHour, startMinute] = task.start.split(":").map(Number);
                     const [endHour, endMinute] = task.end.split(":").map(Number);
+                    const [year, month, day] = task.date.split("-").map(Number);
 
                     return {
                         id: task.taskId,
                         title: task.description,
-                        start: new Date(
-                            date.getFullYear(),
-                            date.getMonth(),
-                            date.getDate(),
-                            startHour,
-                            startMinute
-                        ),
-                        end: new Date(
-                            date.getFullYear(),
-                            date.getMonth(),
-                            date.getDate(),
-                            endHour,
-                            endMinute
-                        ),
+                        start: new Date(year, month - 1, day, startHour, startMinute),
+                        end: new Date(year, month - 1, day, endHour, endMinute),
                         backgroundColor: task.categoryColor,
                         categoryId: task.categoryId,
                     };
@@ -103,6 +92,7 @@ const CalendarView = ({ refreshTodayTasks, highlightedSlots = [] }) => {
 
             setEvents(fetchedEvents);
         } catch (err) {
+            addAlert("캘린더 데이터를 로드하는데 오류가 발생했습니다, 잠시 후 다시 시도해주세요.");
             console.error("Failed to load calendar events:", err);
         } finally {
             setLoading(false);
@@ -121,10 +111,9 @@ const CalendarView = ({ refreshTodayTasks, highlightedSlots = [] }) => {
 
     // 트리거 변화 감지 후 카테고리 데이터 로드
     useEffect(() => {
-        const fetchCategories = async () => {
-            await loadCategories(setCategories);
-        };
-        fetchCategories();
+        if (categoryTrigger > 0) {
+            loadCategories();
+        }
     }, [categoryTrigger]); // 트리거 상태가 변경될 때 실행
 
     // 트리거 업데이트 함수
@@ -198,6 +187,7 @@ const CalendarView = ({ refreshTodayTasks, highlightedSlots = [] }) => {
             refreshTodayTasks();
             setContextMenu(null); // 컨텍스트 메뉴 닫기
         } catch (err) {
+            addAlert(error.response.data.message);
             console.error('Failed to delete task:', err);
         }
     };
@@ -245,6 +235,7 @@ const CalendarView = ({ refreshTodayTasks, highlightedSlots = [] }) => {
             refreshTodayTasks();
             setEditModalOpen(false); // 수정 모달 닫기
         } catch (error) {
+            addAlert(error.response.data.message);
             console.error('Error updating task:', error);
         }
     };
@@ -276,9 +267,14 @@ const CalendarView = ({ refreshTodayTasks, highlightedSlots = [] }) => {
         );
     };
 
+    let isMounted = false;
+
     useEffect(() => {
-        calculateDateRangeAndFetch(currentDate, currentView);
-        loadCategories();
+        if (!isMounted) {
+            isMounted = true;
+            calculateDateRangeAndFetch(currentDate, currentView);
+            loadCategories();
+        }
     }, []);
 
     useEffect(() => {

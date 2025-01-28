@@ -1,19 +1,71 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import './MainPage.css';
 import LeftSidebar from '../leftSidebar/LeftSidebar';
 import CalendarView from '../rightContent/CalendarView';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import FriendsManagement from "../rightContent/FriendsManagement";
 import TeamsManagement from "../rightContent/TeamsManagement";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const MainPage = () => {
-    const [activeRightTab, setActiveRightTab] = useState('calendar'); // 기본: 캘린더
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // URL에서 탭 정보 추출 (기본값은 'calendar')
+    const [activeRightTab, setActiveRightTab] = useState(() => {
+        const searchParams = new URLSearchParams(location.search);
+        return searchParams.get('tab') || 'calendar';
+    });
+
+    const [isAuthenticated, setIsAuthenticated] = useState(null); // 로그인 상태 관리
     const [todayTasksTrigger, setTodayTasksTrigger] = useState(0);
     const [teamListTrigger, setTeamListTrigger] = useState(0);
     const [friendListTrigger, setFriendListTrigger] = useState(0);
     const [highlightedSlots, setHighlightedSlots] = useState([]);
     const [slotsToHighlight, setSlotsToHighlight] = useState([]);
     const [triggerHighlight, setTriggerHighlight] = useState(false); // 강조 상태 제어
+
+    useEffect(() => {
+        const token = getAccessTokenFromCookie();
+        if (!token) {
+            setIsAuthenticated(false); // 로그인 실패
+        } else {
+            setIsAuthenticated(true); // 로그인 성공
+        }
+    }, []);
+
+    // 비인증 상태에서 로그인 페이지로 리다이렉트
+    useEffect(() => {
+        if (isAuthenticated === false) {
+            navigate("/", { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
+
+    // URL과 탭 상태 동기화
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        if (searchParams.get('tab') !== activeRightTab) {
+            searchParams.set('tab', activeRightTab);
+            navigate(`?${searchParams.toString()}`, { replace: true });
+        }
+    }, [activeRightTab, location.search, navigate]);
+
+    // 뒤로 가기 이벤트 처리
+    useEffect(() => {
+        const handlePopState = () => {
+            if (activeRightTab !== 'calendar') {
+                setActiveRightTab('calendar'); // CalendarView로 이동
+            } else {
+                navigate("/", { replace: true }); // 로그인 페이지로 이동
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [activeRightTab, navigate]);
 
     // "캘린더에서 보기" 클릭 시 동작
     const handleViewInCalendar = (slots) => {
@@ -84,17 +136,23 @@ const MainPage = () => {
         }
     };
 
-
     return (
         <div className="main-page">
             {/* 왼쪽 사이드바 */}
             <div className="left-section">
-                <LeftSidebar refreshTrigger={todayTasksTrigger}
-                             refreshFriendListTrigger={refreshFriendList}
-                             refreshTeamListTrigger={refreshTeamList}
-                             onManageFriends={() => setActiveRightTab('friends')}
-                             onManageTeams={() => setActiveRightTab('teams')}
-                             setHighlightedSlots={handleViewInCalendar} // 상태 전달
+                <LeftSidebar
+                    refreshTrigger={todayTasksTrigger}
+                    refreshFriendListTrigger={refreshFriendList}
+                    refreshTeamListTrigger={refreshTeamList}
+                    onManageFriends={() => {
+                        setActiveRightTab('friends'); // 상태 업데이트
+                        navigate("?tab=friends"); // URL 업데이트
+                    }}
+                    onManageTeams={() => {
+                        setActiveRightTab('teams'); // 상태 업데이트
+                        navigate("?tab=teams"); // URL 업데이트
+                    }}
+                    setHighlightedSlots={handleViewInCalendar} // 상태 전달
                 />
             </div>
 

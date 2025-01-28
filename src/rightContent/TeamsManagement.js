@@ -165,8 +165,8 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
         e.preventDefault();
         const rect = e.currentTarget.getBoundingClientRect();
         setTeamContextMenu({
-            mouseX: rect.right + 4, // 요소의 오른쪽
-            mouseY: rect.top, // 요소의 상단
+            mouseX: rect.right + 20, // 요소의 오른쪽
+            mouseY: rect.top - 18, // 요소의 상단
         });
         setSelectedTeam(team); // 선택된 팀 설정
     };
@@ -253,11 +253,33 @@ const TeamsManagement = ({ onBackToCalendar, refreshTeamList }) => {
                             <li
                                 key={team.id}
                                 className="bg-white p-4 rounded shadow flex justify-between items-center hover:shadow-md"
-                                onContextMenu={(e) => handleTeamRightClick(e, team)}
                             >
+                                {/* 팀 이름 */}
                                 <div>
                                     <p className="text-lg font-semibold text-gray-700">{team.name}</p>
                                 </div>
+
+                                {/* 컨텍스트 메뉴 버튼 */}
+                                <button
+                                    onContextMenu={(e) => handleTeamRightClick(e, team)}
+                                    className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                                >
+                                    {/* 3개의 가로줄 아이콘 */}
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        className="w-6 h-6"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M4 6h16M4 12h16M4 18h16"
+                                        />
+                                    </svg>
+                                </button>
                             </li>
                         ))}
                     </ul>

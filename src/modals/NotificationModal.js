@@ -79,7 +79,7 @@ const NotificationModal = ({ isOpen, onClose, sidebarRef }) => {
 
         fetchNotifications(0);
 
-        const source = subscribeToNotifications((newNotification) => {
+        /*const source = subscribeToNotifications((newNotification) => {
             if (newNotification && newNotification.id && newNotification.content) {
                 setNotifications((prev) => [newNotification, ...prev]);
             } else {
@@ -87,7 +87,7 @@ const NotificationModal = ({ isOpen, onClose, sidebarRef }) => {
             }
         });
 
-        return () => source.close();
+        return () => source.close();*/
     }, [isOpen]);
 
     // 스크롤 이벤트 핸들러

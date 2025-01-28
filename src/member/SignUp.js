@@ -28,7 +28,8 @@ export default function SignUp() {
         }
 
         try {
-            const response = await fetch(`http://43.200.155.29:8080/sign-up/valid?email=${encodeURIComponent(formData.email)}`, {
+            const response = await fetch(`https://woodking2-server.site:443/sign-up/valid?email=${encodeURIComponent(formData.email)}`, {
+            //const response = await fetch(`http://localhost:8080/sign-up/valid?email=${encodeURIComponent(formData.email)}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,7 +55,7 @@ export default function SignUp() {
 
     const handleSubmit = async () => {
         try {
-            const response = await fetch('http://43.200.155.29:8080/sign-up', {
+            const response = await fetch('https://woodking2-server.site:443/sign-up', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,7 +65,7 @@ export default function SignUp() {
 
             if (response.ok) {
                 addAlert("회원가입 성공")
-                setTimeout(() => navigate('/'), 2000); // 2초 후 로그인 페이지로 이동
+                setTimeout(() => navigate('/'));
             } else {
                 addAlert("회원가입 중 문제가 발생했습니다, 잠시 후 다시 시도해주세요.")
             }

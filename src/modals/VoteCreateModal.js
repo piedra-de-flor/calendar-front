@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import moment from 'moment';
+import 'moment/locale/ko';
 import {createVote} from "../api/VoteApi";
 import {useAlert} from "../root/AlertProvider";
 
@@ -11,7 +12,7 @@ const VoteCreateModal = ({ isOpen, onClose, availableSlots, teamId }) => {
     const [selectedSlots, setSelectedSlots] = useState([]);
 
     if (!isOpen) return null;
-
+    moment.locale('ko');
     const toggleSelection = (slot) => {
         setSelectedSlots((prev) => {
             if (prev.includes(slot)) {
@@ -50,7 +51,7 @@ const VoteCreateModal = ({ isOpen, onClose, availableSlots, teamId }) => {
             onClose(); // 모달 닫기
         } catch (error) {
             console.error('Failed to create vote:', error);
-            addAlert("투표 생성 중 오류가 발생했습니다, 잠시 후 다시 시도해주세요.")
+            addAlert(error.response.data.message);
         }
     };
 
@@ -121,7 +122,7 @@ const VoteCreateModal = ({ isOpen, onClose, availableSlots, teamId }) => {
                                     onClick={() => toggleSelection(slot)}
                                 >
                                     <span className="text-gray-800">
-                                        {moment(slot.start).format('YYYY-MM-DD HH:mm')} -{' '}
+                                        {moment(slot.start).format('dddd / YYYY-MM-DD HH:mm')} ~{' '}
                                         {moment(slot.end).format('YYYY-MM-DD HH:mm')}
                                     </span>
                                     <span className="text-gray-500 text-sm">
