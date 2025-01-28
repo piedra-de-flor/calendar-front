@@ -1,4 +1,7 @@
 import axios from "axios";
+import {Cookies} from 'react-cookie';
+
+const cookies = new Cookies();
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({
@@ -16,10 +19,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
     (config) => {
         // 쿠키에서 accessToken 가져오기
-        const cookies = document.cookie.split("; ");
-        const accessTokenCookie = cookies.find((cookie) =>
-            cookie.startsWith("accessToken=")
-        );
+        const accessTokenCookie = cookies.get("accessToken")
 
         if (accessTokenCookie) {
             const accessToken = accessTokenCookie.split("=")[1];
