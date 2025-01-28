@@ -9,7 +9,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {useAlert} from "./AlertProvider";
 
 const MainPage = () => {
-    const { addAlert } = useAlert();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -37,11 +36,11 @@ const MainPage = () => {
     }, []);
 
     // 비인증 상태에서 로그인 페이지로 리다이렉트
-    useEffect(() => {
+    /*useEffect(() => {
         if (isAuthenticated === false) {
             navigate("/", { replace: true });
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate]);*/
 
     // URL과 탭 상태 동기화
     useEffect(() => {
@@ -93,14 +92,13 @@ const MainPage = () => {
         return tokenCookie ? tokenCookie.split("=")[1] : null;
     };
 
-    useEffect(() => {
+    /*useEffect(() => {
         const token = getAccessTokenFromCookie();
         if (!token) {
-            addAlert("로그인 실패~")
             console.error("Access token is missing. Redirecting to login.");
             window.location.href = "/"; // 로그인 페이지로 리다이렉트
         }
-    }, []);
+    }, []);*/
 
     const refreshTodayTasks = () => {
         setTodayTasksTrigger((prev) => prev + 1);
