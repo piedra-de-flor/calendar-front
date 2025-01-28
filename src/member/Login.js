@@ -24,15 +24,9 @@ export default function Login() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    withCredentials: true,
                 }
             );
-
-            const { accessToken, refreshToken } = response.data;
-
-            // Access Token 쿠키에 저장
-            document.cookie = `accessToken=${accessToken}; path=/; max-age=3600`; // 1시간 유효
-            // Refresh Token 쿠키에 저장
-            document.cookie = `refreshToken=${refreshToken}; path=/; max-age=604800`; // 7일 유효
 
             navigate("/main"); // 로그인 성공 시 메인 페이지로 이동
         } catch (error) {
