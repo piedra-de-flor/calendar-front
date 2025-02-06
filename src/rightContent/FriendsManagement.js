@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
     deleteFriend,
     fetchFriends,
@@ -12,6 +12,7 @@ import {useAlert} from "../root/AlertProvider";
 
 
 const FriendsManagement = ({ onBackToCalendar, refreshFriendList }) => {
+    const isFetching = useRef(false);
     const { addAlert } = useAlert();
     const [friends, setFriends] = useState([]);
     const [sentFriendRequests, setSentFriendRequests] = useState([]);
@@ -22,6 +23,7 @@ const FriendsManagement = ({ onBackToCalendar, refreshFriendList }) => {
     const [friendContextMenu, setFriendContextMenu] = useState(null);
 
     const fetchFriendsData = async () => {
+        if (isFetching.current) return; // 이미 요청 중이면 실행하지 않음
         try {
             setLoading(true);
             const [friendsResponse, sentResponse, receivedResponse] = await Promise.all([
